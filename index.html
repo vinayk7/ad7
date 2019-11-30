@@ -18,15 +18,36 @@
     </style>
     <script>
         var timerStart = Date.now();
-            console.log("initialised @: %c"+ (Date.now()-timerStart) + ' ms', 'color:blue;');///DEBUG 
+        console.log("initialised @: %c"+ (Date.now()-timerStart) + ' ms', 'color:blue;');///DEBUG 
 
-            window.addEventListener('load', function(){
-                console.log("Page load complete@: %c "+ (Date.now()-timerStart) + ' ms ', 'color:white;background-color:darkviolet'); 
-                //alert('Page loading took: ' +  ((Date.now()-timerStart)/1000).toFixed(2) + ' seconds' )
-            });
+        window.addEventListener('load', function(){
+            console.log("Page load complete@: %c "+ (Date.now()-timerStart) + ' ms ', 'color:white;background-color:darkviolet'); 
+            //alert('Page loading took: ' +  ((Date.now()-timerStart)/1000).toFixed(2) + ' seconds' )
+        });
 
         var smallAdInterval = 2;
         var bigAdInterval = 4;
+        
+        var docHeight = 0;
+        var winHeight = 0;
+        winHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+
+        var lastBottomPos = 0;
+        var alreadyLoading = false;
+        var newsArr = [];
+
+        findHighestNode(document.documentElement.childNodes);
+                
+        
+        function findHighestNode(nodesList) {
+            for (var i = nodesList.length - 1; i >= 0; i--) {
+                if (nodesList[i].scrollHeight && nodesList[i].clientHeight) {
+                    var elHeight = Math.max(nodesList[i].scrollHeight, nodesList[i].clientHeight);
+                    docHeight = Math.max(elHeight, docHeight);
+                }
+                if (nodesList[i].childNodes.length) findHighestNode(nodesList[i].childNodes);
+            }
+        }
     </script>
 
     <style>
@@ -41,6 +62,7 @@
     <link rel="dns-prefetch" href="https://feed.dailyhunt.in">
     <link rel="dns-prefetch" href="https://ad.doubleclick.net">
     <link rel="dns-prefetch" href="https://pagead2.googlesyndication">
+    
     <div class="indus_middle" id="indus_cont">
         <div id="indus_cont_five">
             <!--  Search Bar  -->
@@ -109,21 +131,25 @@
                             <script>
                                 googletag.cmd.push(function() {
                                  googletag.pubads().addEventListener('slotRenderEnded', function(event) {
-                                        switch(event.slot.getAdUnitPath()){
-                                            case '/42115163/IP_start.indusos.com_320X100_Mobile':
-                                                    console.log('Ad 1 HTML loaded@ '+  (Date.now()-timerStart) + ' ms ');
-                                                    document.querySelector('#div-gpt-ad-1551357349271-9 div iframe').onload = function(){ 
-                                                        document.getElementById('top_news_ads1').style.display = 'list-item';
-                                                        console.log('Ad 1 Content loaded@ '+  (Date.now()-timerStart) + ' ms ');
-                                                    }
-                                                    break;
-                                            case '/42115163/IP_start.indusos.com_300X250_Mobile':
-                                                    console.log('Ad 2 HTML loaded@ '+  (Date.now()-timerStart) + ' ms ');
-                                                    document.querySelector('#div-gpt-ad-1565767605361-0 div iframe').onload = function(){
-                                                        document.getElementById('top_news_ads2').style.display = 'list-item';
-                                                        console.log('Ad 2 Content loaded@ '+  (Date.now()-timerStart) + ' ms ');
-                                                    }
-                                                    break;
+                                    switch(event.slot.getAdUnitPath()){
+                                        case '/42115163/IP_start.indusos.com_320X100_Mobile':
+                                                console.log('Ad 1 HTML loaded@ '+  (Date.now()-timerStart) + ' ms ');
+                                                document.querySelector('#div-gpt-ad-1551357349271-9 div iframe').onload = function(){ 
+                                                    document.getElementById('top_news_ads1').style.display = 'list-item';
+                                                    console.log('Ad 1 Content loaded@ '+  (Date.now()-timerStart) + ' ms ');
+                                                    findHighestNode(document.documentElement.childNodes);
+                                                    
+                                                }
+                                                break;
+                                        case '/42115163/IP_start.indusos.com_300X250_Mobile':
+                                                console.log('Ad 2 HTML loaded@ '+  (Date.now()-timerStart) + ' ms ');
+                                                document.querySelector('#div-gpt-ad-1565767605361-0 div iframe').onload = function(){
+                                                    document.getElementById('top_news_ads2').style.display = 'list-item';
+                                                    console.log('Ad 2 Content loaded@ '+  (Date.now()-timerStart) + ' ms ');
+                                                    findHighestNode(document.documentElement.childNodes);
+                                                    
+                                                }
+                                                break;
                                         }
                                     });
                                    });
@@ -135,11 +161,10 @@
         </div>
     </div>
 
-
     <script>
         // FETCH NEWS
         const fetchNews = async (query) => {
-            console.log('fetching the news......');
+
             let pageNumber = 1;
             let newsAppKey = 'DVj2UsFaFnN+3kn4VHWPS9hUiLCz4eOtblRfAUrDC50=';
             let current_parameter = query;
@@ -186,7 +211,8 @@
                 console.log("Creating news feed DOM....");
 
                 data.rows = data.rows.sort((a,b) => { return b.publishTime - a.publishTime }); // fix the orders BUG:dailyhunt
-
+                
+                newsArr = data.rows;
                 data.rows = data.rows.slice(0,9);
 
                 var fstblk = new DocumentFragment();
@@ -314,7 +340,7 @@
                                         id="news_image_${idx}"
                                         class="img-r-esponsive img-rounded img-auto feeds_right"
                                         src="${imgSrc}"
-                                        alt="${i.source}">
+                                        alt="${i.source}" onload="findHighestNode(document.documentElement.childNodes)">
                                 </div>
                             </a>
                         </div>`;
@@ -369,6 +395,7 @@
                     
                 });
                 document.getElementById('all_news').appendChild(thdblk);
+                findHighestNode(document.documentElement.childNodes)
                 
             } else {
                 console.log('Problem fetching the data.')
@@ -638,11 +665,9 @@ setTimeout(function () {
 }, 12000);
 
 function show_nextitem() {
-
     var current_status = document.getElementsByClassName('fourinch')[0].style.display;
     var arrow_el = document.getElementById("change_arrowicon");
     var x = document.getElementsByClassName('fourinch');
-
     var arrImg = document.getElementById('arrow_img');
     if (current_status == "none" || current_status == "") {
         arrImg.src = 'assets/images/up-arrow-sc.svg';
@@ -654,8 +679,73 @@ function show_nextitem() {
         for (var i = 0; i < x.length; i++) {
             x[i].style.display = "none";
         }
-
     }
 }
+    
+
+
+window.addEventListener('load', function(){
+    document.body.addEventListener('touchmove', handleScrollMobile); //mobile
+    window.addEventListener('scroll', handleScrollMobile); //desktop
+}); 
+
+function handleScrollMobile() {
+    if ( (docHeight - winHeight < (window.pageYOffset + 40)) && (window.pageYOffset + 40 >= lastBottomPos) ) {
+        if (!alreadyLoading) {
+            console.log('%c Called!', 'background: #aaa; color: green');
+            alreadyLoading = true;
+            lastBottomPos = window.pageYOffset + 50;
+            appendRemainingNews();
+        }
+    }
+}
+    
+function appendRemainingNews()
+{
+    var fstblk = new DocumentFragment();
+    newsArr.forEach((i, idx) => {
+        let li = document.createElement('li');
+        li.id = `top_news_${idx}`;
+
+        let sourceImg = i.sourceLogo.replace(/{CMD}/g, "crop").replace(/{W}x{H}_{Q}/g, "25x25_60").replace(/{EXT}/g, "webp");
+        sourceImg = sourceImg.replace('96x96_60', '20x20_60');
+
+        let imgSrc = i.images[0].replace(/{CMD}/g, "crop").replace(/{W}x{H}_{Q}/g, "150x150_90").replace(/{EXT}/g, "webp");
+
+        li.innerHTML = `<div class="top_div">
+            <a id="news_href_${idx}" href="${i.deepLinkUrl}">
+                <div class="col-xs-9">
+                    <div class="top_news_pro">
+                        <img
+                            id="source_image_${idx}"
+                            class="top_mar"
+                            src="${sourceImg}"
+                            alt="${i.source}">
+                        <span class="source_name" id="source_name_${idx}">${i.source}</span>
+                    </div>
+                    <b id="news_heading_${idx}" class="bwrap">${i.title}</b>
+                    <div class="source_image">
+                        <h6 id="publishTime_${idx}" class="publishTime" data-publish-ts="${i.publishTime}">${timeSince(i.publishTime)}</h6>
+                    </div>
+                </div>
+                <div class="col-xs-3" id="pic">
+                    <img
+                        id="news_image_${idx}"
+                        class="img-r-esponsive img-rounded img-auto feeds_right"
+                        src="${imgSrc}"
+                        alt="${i.source}">
+                </div>
+            </a>
+        </div>`;
+        fstblk.appendChild(li);
+    });
+    
+    document.getElementById('all_news').insertBefore(fstblk, document.querySelector('#all_news li:last-child'));
+    findHighestNode(document.documentElement.childNodes);
+    
+}
+    
+
+
 </script>
 </html>
