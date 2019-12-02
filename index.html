@@ -212,7 +212,7 @@
 
                 data.rows = data.rows.sort((a,b) => { return b.publishTime - a.publishTime }); // fix the orders BUG:dailyhunt
                 
-                newsArr = data.rows;
+                newsArr = data.rows.slice(9);
                 data.rows = data.rows.slice(0,9);
 
                 var fstblk = new DocumentFragment();
