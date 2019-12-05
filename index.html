@@ -705,6 +705,7 @@ function appendRemainingNews()
 {
     var fstblk = new DocumentFragment();
     newsArr.forEach((i, idx) => {
+        idx++; // to fix the image offset bug
         let li = document.createElement('li');
         li.id = `top_news_${idx}`;
 
