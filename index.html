@@ -742,7 +742,10 @@ function appendRemainingNews()
         fstblk.appendChild(li);
     });
     
-    document.getElementById('all_news').insertBefore(fstblk, document.querySelector('#all_news li:last-child'));
+    //document.getElementById('all_news').insertAfter(fstblk, document.querySelector('#all_news li:last-child'));
+
+    var refn = document.querySelector('#all_news li:last-child');
+    refn.parentNode.insertBefore(fstblk, refn.nextSibling);
     findHighestNode(document.documentElement.childNodes);
     
 }
