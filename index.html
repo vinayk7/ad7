@@ -232,6 +232,7 @@
                         let sourceImg = i.sourceLogo.replace(/{CMD}/g, "crop").replace(/{W}x{H}_{Q}/g, "25x25_60").replace(/{EXT}/g, "webp");
                         sourceImg = sourceImg.replace('96x96_60', '20x20_60');
 
+                        if(typeof i.images[0]!='undefined' && i.images[0]!= null && i.images[0]!= '')
                         let imgSrc = i.images[0].replace(/{CMD}/g, "crop").replace(/{W}x{H}_{Q}/g, "700x400_80").replace(/{EXT}/g, "webp");
 
                         li.innerHTML = `<div class="top_div">
@@ -275,6 +276,7 @@
                         let sourceImg = i.sourceLogo.replace(/{CMD}/g, "crop").replace(/{W}x{H}_{Q}/g, "25x25_60").replace(/{EXT}/g, "webp");
                         sourceImg = sourceImg.replace('96x96_60', '20x20_60');
 
+                        if(typeof i.images[0]!='undefined' && i.images[0]!= null && i.images[0]!= '')
                         let imgSrc = i.images[0].replace(/{CMD}/g, "crop").replace(/{W}x{H}_{Q}/g, "60x60_60").replace(/{EXT}/g, "webp");
 
                         li.innerHTML = `<div class="top_div">
@@ -317,7 +319,7 @@
                         let sourceImg = i.sourceLogo.replace(/{CMD}/g, "crop").replace(/{W}x{H}_{Q}/g, "25x25_60").replace(/{EXT}/g, "webp");
                         sourceImg = sourceImg.replace('96x96_60', '20x20_60');
 
-
+                        if(typeof i.images[0]!='undefined' && i.images[0]!= null && i.images[0]!= '')
                         let imgSrc = i.images[0].replace(/{CMD}/g, "crop").replace(/{W}x{H}_{Q}/g, "60x60_60").replace(/{EXT}/g, "webp");
 
                         li.innerHTML = `<div class="top_div">
@@ -362,7 +364,7 @@
                         let sourceImg = i.sourceLogo.replace(/{CMD}/g, "crop").replace(/{W}x{H}_{Q}/g, "25x25_60").replace(/{EXT}/g, "webp");
                         sourceImg = sourceImg.replace('96x96_60', '20x20_60');
 
-
+                        if(typeof i.images[0]!='undefined' && i.images[0]!= null && i.images[0]!= '')
                         let imgSrc = i.images[0].replace(/{CMD}/g, "crop").replace(/{W}x{H}_{Q}/g, "60x60_60").replace(/{EXT}/g, "webp");
 
                         li.innerHTML = `<div class="top_div">
@@ -712,6 +714,7 @@ function appendRemainingNews()
         let sourceImg = i.sourceLogo.replace(/{CMD}/g, "crop").replace(/{W}x{H}_{Q}/g, "25x25_60").replace(/{EXT}/g, "webp");
         sourceImg = sourceImg.replace('96x96_60', '20x20_60');
 
+        if(typeof i.images[0]!='undefined' && i.images[0]!= null && i.images[0]!= '')
         let imgSrc = i.images[0].replace(/{CMD}/g, "crop").replace(/{W}x{H}_{Q}/g, "60x60_60").replace(/{EXT}/g, "webp");
 
         li.innerHTML = `<div class="top_div">
