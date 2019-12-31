@@ -684,12 +684,11 @@ const redirectFunc = (query) => {
     let newNode = document.createElement('script');
     newNode.id = 'site_redirect';
     newNode.src = 'https://edd31.siteplug.com/sssapi?o=edd31&s=77160&kw=' + query + '&itype=cs&f=json&af=0&di=&callback=redirectMethod';
-
+//https://edd31.siteplug.com/sssapi?o=edd31&s=77160&kw=' + search_query + '&itype=cs&f=json&af=0&di=' + current_parameter,
     document.body.appendChild(newNode);
 }
 
 function redirectMethod(res) {
-    debugger;
     if (typeof res == 'string') {
         let res = JSON.parse(res);
     }
