@@ -29,11 +29,15 @@
         a.async = 1;
         a.src = g;
         m.parentNode.insertBefore(a, m)
-    })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+    })(window, document, 'script', 'https://www.google-analytics.com/analytics_debug.js', 'ga');
 
-    ga('create', 'UA-47795566-10', 'auto');
-    ga('send', 'pageview');
-        
+    //ga(()=>{alert('ga loaded')});
+
+        ga('create', 'UA-47795566-10', function(tracker) { 
+            //console.log(tracker.get('clientId'));
+        });
+        ga('send', 'pageview');        
+
         var timerStart = Date.now();
         console.log("initialised @: %c"+ (Date.now()-timerStart) + ' ms', 'color:blue;');///DEBUG 
 
@@ -279,7 +283,16 @@
                             </a>
                         </div>`;
                         
-                        
+                        li.onclick = function(e) { 
+                                                                        e.preventDefault();
+                                                                        ga('send', 'event', 'ClickEvent', 'topNewsClicked', i.title, 
+                                                                                {
+                                                                                    hitCallback: function() {
+                                                                                      window.location.href= i.deepLinkUrl;
+                                                                                    }
+                                                                                }
+                                                                        ); 
+                        }
                         newsFragment.appendChild(li);
                         document.getElementById('all_news').insertBefore(newsFragment, document.getElementById('top_news_ads1'));
 
@@ -320,6 +333,18 @@
                                 </div>
                             </a>
                         </div>`;
+
+                        li.onclick = function(e) { 
+                                                                        e.preventDefault();
+                                                                        ga('send', 'event', 'ClickEvent', 'regularNewsClicked', i.title, 
+                                                                                {
+                                                                                    hitCallback: function() {
+                                                                                      window.location.href= i.deepLinkUrl;
+                                                                                    }
+                                                                                }
+                                                                        ); 
+                                                        }
+
                         fstblk.appendChild(li);
                     }
                     else if( (smallAdInterval < idx) && (idx < bigAdInterval) )
@@ -364,6 +389,16 @@
                             </a>
                         </div>`;
 
+                        li.onclick = function(e) { 
+                                                                        e.preventDefault();
+                                                                        ga('send', 'event', 'ClickEvent', 'regularNewsClicked', i.title, 
+                                                                                {
+                                                                                    hitCallback: function() {
+                                                                                      window.location.href= i.deepLinkUrl;
+                                                                                    }
+                                                                                }
+                                                                        ); 
+                                                        }
                         secblk.appendChild(li);
 
                     }
@@ -409,6 +444,16 @@
                             </a>
                         </div>`;
 
+                        li.onclick = function(e) { 
+                                                                        e.preventDefault();
+                                                                        ga('send', 'event', 'ClickEvent', 'regularNewsClicked', i.title, 
+                                                                                {
+                                                                                    hitCallback: function() {
+                                                                                      window.location.href= i.deepLinkUrl;
+                                                                                    }
+                                                                                }
+                                                                        ); 
+                                                        }
                         thdblk.appendChild(li);
                     }
                     
@@ -449,6 +494,17 @@ window.addEventListener('DOMContentLoaded', (event) => {
         var sel = '#all_news';
         var coll = document.querySelector(sel).classList.add('morethan400');
     }
+
+    //---- Missing Google analytic codes ----//
+    document.addEventListener('click', function (event) {
+        if (event.target.matches('.amazon_ad')) {
+            ga('send', 'event', 'ClickEvent', 'AmazonAdClicked');
+        }
+        if (event.target.matches('.world-cup-ad')) {
+            ga('send', 'event', 'ClickEvent', 'WorldCupAdClicked');
+        }
+    });
+
 });
 
 // APPEND SITEPLUG SCRIPT
@@ -474,8 +530,12 @@ function fetchRecommends(res) {
         news_node.id = `fig_div_${i}`;
         let img_src = data[i]['iurl'].replace('36x36', '128x128');
 
-        let single_item = `<div class="panel-body">
-                <a id="app_url_${i}" href="${data[i]['rurl']}">
+        let single_item = `<div class="panel-body" onclick="ga('send', 'event', 'ClickEvent', 'RecommendedClicked', '${data[i]['brand']}', {
+            hitCallback: function() {
+                window.location.href= '${data[i]['rurl']}';
+            }
+        }); ">
+                <a id="app_url_${i}" href="javascript:null">
                     <img class="img-responsive img-thumbnail center-block recommended_apps"
                         id="app_image_${i}" src="${img_src}" alt="${data[i]['brand']}"
                         data-name="${data[i]['brand']}">
@@ -516,26 +576,36 @@ function fetchRecommends(res) {
 
 
 // SEARCH BAR
-let search_dom_node = document.getElementById('search_in_page');
+var search_dom_node = document.getElementById('search_in_page');
 
 search_dom_node.addEventListener('keyup', e => {
     let validInput = e.target.value.length > 2;
 
     if (validInput && (e.keyCode >= 65 && e.keyCode <= 122)) {
-        searchFunc(e.target.value);
+        searchFunc(search_dom_node.value);
     } else if (validInput && e.keyCode === 13) {
-        document.querySelector('.site_suggest_ads').innerHTML = '';
-        redirectFunc(e.target.value);
+        ga('send', 'event', 'ClickEvent', 'SearchClicked', search_dom_node.value, {
+            hitCallback: function() {
+                document.querySelector('.site_suggest_ads').innerHTML = '';
+                redirectFunc(search_dom_node.value);
+            }
+        });
+
     } else if (validInput) {
         document.querySelector('.site_suggest_ads').innerHTML = '';
     }
 });
 
-document.getElementById('button-icon').addEventListener('click', () => {
-    if (search_dom_node.value.length > 2) {
-        redirectFunc(search_dom_node.value);
-    }
+document.getElementById('button-icon').addEventListener('click', (e) => {
+        ga('send', 'event', 'ClickEvent', 'SearchClicked', search_dom_node.value, {
+            hitCallback: function() {
+                document.querySelector('.site_suggest_ads').innerHTML = '';
+                redirectFunc(search_dom_node.value);
+            }
+        });
 });
+
+
 
 const searchFunc = query => {
     let node = document.getElementById('search_siteplug');
@@ -578,7 +648,7 @@ function renderSearchResult(res) {
             let li = document.createElement('li');
             li.classList.add('li_row');
             li.innerHTML = `<div class="ad_list">
-                <a href="${i.rurl}">
+                <a href="javascript:null">
                 <div id="icon">
                     <img id="brand_image" class="img-responsive ads-img img-auto" src="${i.iurl}" alt="${i.brand}">
                 </div>
@@ -589,10 +659,17 @@ function renderSearchResult(res) {
                 </div>
                 </a>
             </div>`;
+            li.onclick = function(e){  e.preventDefault(); ga('send', 'event', 'ClickEvent', 'siteAdClicked', i.brand, {
+                    hitCallback: function() {
+                      window.location.href = i.rurl;
+                    }
+            }); }
             listFragment.appendChild(li);
         });
         searchList.innerHTML = '';
         searchList.appendChild(listFragment);
+
+
     } else {
         searchBox.style.display = 'none';
         searchList.style.display = 'none';
@@ -620,7 +697,7 @@ function redirectMethod(res) {
 
     let ads = res['ads'];
     if (ads != "No Ads for given Keyword.") {
-        redirectlink = data['ads']['ad']['rurl'];
+        redirectlink = res['ads']['ad']['rurl'];
         window.open(redirectlink, "_self");
     } else {
         window.open("http://b.scandid.in/api/searchv3?category=product&type=json&subid=INDA&key=tqw5643rasf3gbag&pid=ind&product_key=" + query, "_self");
@@ -738,6 +815,17 @@ function appendRemainingNews()
                 </div>
             </a>
         </div>`;
+
+        li.onclick = function(e) { 
+                                                e.preventDefault();
+                                                ga('send', 'event', 'ClickEvent', 'topNewsClicked', i.title, 
+                                                        {
+                                                            hitCallback: function() {
+                                                              window.location.href= i.deepLinkUrl;
+                                                            }
+                                                        }
+                                                ); 
+        }
         fstblk.appendChild(li);
     });
     
@@ -746,7 +834,7 @@ function appendRemainingNews()
     var refn = document.querySelector('#all_news li:last-child');
     refn.parentNode.insertBefore(fstblk, refn.nextSibling);
     findHighestNode(document.documentElement.childNodes);
-    
+    ga('send', 'event', 'ClickEvent', 'readMoreClicked', 'readmore');
 }
     
 
