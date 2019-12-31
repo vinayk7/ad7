@@ -585,10 +585,10 @@ function addListenerMulti(element, eventNames, listener) {
   }
 }
 
-addListenerMulti(search_dom_node, 'touchend keyup', function(e){
-    let validInput = e.target.value.length > 2;
+addListenerMulti(search_dom_node, 'keyup', function(e){
+    var validInput = true;
 
-    if (validInput && (e.keyCode >= 65 && e.keyCode <= 122)) {
+    if (validInput) {
         searchFunc(search_dom_node.value);
     } else if (validInput && e.keyCode === 13) {
         ga('send', 'event', 'ClickEvent', 'SearchClicked', search_dom_node.value, {
@@ -614,23 +614,30 @@ document.getElementById('button-icon').addEventListener('click', (e) => {
         });
 });
 
+ 
 
+function searchFunc () {
 
-const searchFunc = query => {
+    var query = document.getElementById('search_in_page').value;
+
+    console.log(' : = '  + query + ' = :')
     let node = document.getElementById('search_siteplug');
     document.body.removeChild(node);
 
     let newNode = document.createElement('script');
     newNode.id = 'search_siteplug';
-    newNode.src = 'https://cwc89.siteplug.com/sssapi?o=cwc89&s=61071&kw=' + query + '&itype=cs&f=json&i=1&it=1&is=36x36&n=5&af=1&di=&callback=renderSearchResult';
+    var ver = Math.random();
+    newNode.src = 'https://cwc89.siteplug.com/sssapi?o=cwc89&s=61071&kw=' + query + '&itype=cs&f=json&i=1&it=1&is=36x36&n=5&af=1&di=&callback=renderSearchResult&ver='+ver;
     document.body.appendChild(newNode);
 }
 
 function renderSearchResult(res) {
+
     if (typeof res == 'string') {
         let res = JSON.parse(res);
     }
     if (!res['ads']['ad']) {
+        document.querySelector('.site_suggest_ads').innerHTML = '';
         return;
     }
 
@@ -639,8 +646,12 @@ function renderSearchResult(res) {
     if (Array.isArray(res['ads']['ad'])) {
         let arr = [...res['ads']['ad']];
         data.push(...arr);
+        document.querySelector('.site_suggest_ads').innerHTML = '';
+
     } else {
         data.push(res['ads']['ad']);
+        document.querySelector('.site_suggest_ads').innerHTML = '';
+        
     }
 
     let trimmedData = data.slice(0, 3);
@@ -682,11 +693,12 @@ function renderSearchResult(res) {
     } else {
         searchBox.style.display = 'none';
         searchList.style.display = 'none';
+        document.querySelector('.site_suggest_ads').innerHTML = '';
     }
 };
 
 // REDIRECT FUNCTION
-const redirectFunc = (query) => {
+function redirectFunc () {
     let node = document.getElementById('site_redirect');
     document.body.removeChild(node);
 
