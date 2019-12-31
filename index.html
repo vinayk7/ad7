@@ -578,7 +578,7 @@ function fetchRecommends(res) {
 // SEARCH BAR
 var search_dom_node = document.getElementById('search_in_page');
 
-search_dom_node.addEventListener('keyup', e => {
+search_dom_node.addEventListener('input', e => {
     let validInput = e.target.value.length > 2;
 
     if (validInput && (e.keyCode >= 65 && e.keyCode <= 122)) {
