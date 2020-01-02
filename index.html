@@ -47,7 +47,7 @@
         });
 
         var smallAdInterval = 2;
-        var bigAdInterval = 4;
+        var bigAdInterval = 6;
         
         var docHeight = 0;
         var winHeight = 0;
@@ -123,7 +123,7 @@
                     <div class="indus_full" id="indus_full">
                         <ul id="all_news" class="top_news_section top-buffer">
 
-                            <li id="top_news_ads1" style="display:none;">
+                            <li id="top_news_ads1" style="display:none;" onclick="alert();">
                                 <div id="div-gpt-ad-1551357349271-9">
                                     <script type="text/javascript">
                                     googletag.cmd.push(function() {
@@ -227,8 +227,6 @@
         const renderNews = data => {
             if (data && data.count > 0) {
 
-                
-
                 console.log("Creating news feed DOM....");
 
                 data.rows = data.rows.sort((a,b) => { return b.publishTime - a.publishTime }); // fix the orders BUG:dailyhunt
@@ -297,8 +295,9 @@
                         document.getElementById('all_news').insertBefore(newsFragment, document.getElementById('top_news_ads1'));
 
                     } 
-                    else if(idx<smallAdInterval) 
+                    else if(idx<=smallAdInterval)   // case (1) - in
                     {
+                    
                         let li = document.createElement('li');
                         li.id = `top_news_${idx}`;
 
@@ -347,8 +346,9 @@
 
                         fstblk.appendChild(li);
                     }
-                    else if( (smallAdInterval < idx) && (idx < bigAdInterval) )
+                    else if( ( idx >= smallAdInterval) && (idx <= bigAdInterval) ) // case (2) - mid
                     {
+ 
                         if(fstblk){
                             document.getElementById('all_news').insertBefore(fstblk, document.getElementById('top_news_ads1'));
                             fstblk = null
@@ -402,8 +402,9 @@
                         secblk.appendChild(li);
 
                     }
-                    else if( (idx > smallAdInterval) && (idx > bigAdInterval) )
+                    else if(   (idx >= bigAdInterval) )  // case (3) - out
                     {
+   
                         if(secblk){
                             document.getElementById('all_news').insertBefore(secblk, document.getElementById('top_news_ads2'));
                             secblk = null
@@ -588,9 +589,7 @@ function addListenerMulti(element, eventNames, listener) {
 addListenerMulti(search_dom_node, 'keyup', function(e){
     var validInput = true;
 
-    if (validInput) {
-        searchFunc(search_dom_node.value);
-    } else if (validInput && e.keyCode === 13) {
+     if (validInput && e.keyCode === 13) {
         ga('send', 'event', 'ClickEvent', 'SearchClicked', search_dom_node.value, {
             hitCallback: function() {
                 document.querySelector('.site_suggest_ads').innerHTML = '';
@@ -599,11 +598,11 @@ addListenerMulti(search_dom_node, 'keyup', function(e){
         });
 
     } else if (validInput) {
+        searchFunc(search_dom_node.value);
         document.querySelector('.site_suggest_ads').innerHTML = '';
     }
 });
 
- 
 
 document.getElementById('button-icon').addEventListener('click', (e) => {
         ga('send', 'event', 'ClickEvent', 'SearchClicked', search_dom_node.value, {
@@ -627,6 +626,7 @@ function searchFunc () {
     let newNode = document.createElement('script');
     newNode.id = 'search_siteplug';
     var ver = Math.random();
+
     newNode.src = 'https://cwc89.siteplug.com/sssapi?o=cwc89&s=61071&kw=' + query + '&itype=cs&f=json&i=1&it=1&is=36x36&n=5&af=1&di=&callback=renderSearchResult&ver='+ver;
     document.body.appendChild(newNode);
 }
@@ -698,15 +698,19 @@ function renderSearchResult(res) {
 };
 
 // REDIRECT FUNCTION
-function redirectFunc () {
+function redirectFunc (query) {
     let node = document.getElementById('site_redirect');
+
+    if(node)
     document.body.removeChild(node);
 
     let newNode = document.createElement('script');
     newNode.id = 'site_redirect';
     newNode.src = 'https://edd31.siteplug.com/sssapi?o=edd31&s=77160&kw=' + query + '&itype=cs&f=json&af=0&di=&callback=redirectMethod';
 //https://edd31.siteplug.com/sssapi?o=edd31&s=77160&kw=' + search_query + '&itype=cs&f=json&af=0&di=' + current_parameter,
+
     document.body.appendChild(newNode);
+
 }
 
 function redirectMethod(res) {
@@ -717,6 +721,7 @@ function redirectMethod(res) {
     let query = document.getElementById('search_in_page').value;
 
     let ads = res['ads'];
+ 
     if (ads != "No Ads for given Keyword.") {
         redirectlink = res['ads']['ad']['rurl'];
         window.open(redirectlink, "_self");
@@ -767,11 +772,13 @@ function show_nextitem() {
     var x = document.getElementsByClassName('fourinch');
     var arrImg = document.getElementById('arrow_img');
     if (current_status == "none" || current_status == "") {
+        ga('send', 'event', 'ClickEvent', 'dropDownMax'); // newGAEvent
         arrImg.src = 'assets/images/up-arrow-sc.svg';
         for (var i = 0; i < x.length; i++) {
             x[i].style.display = "block";
         }
     } else {
+        ga('send', 'event', 'ClickEvent', 'dropDownMin'); // newGAEvent
         arrImg.src = 'assets/images/down-arrow-sc.svg';
         for (var i = 0; i < x.length; i++) {
             x[i].style.display = "none";
@@ -858,7 +865,5 @@ function appendRemainingNews()
     ga('send', 'event', 'ClickEvent', 'readMoreClicked', 'readmore');
 }
     
-
-
 </script>
 </html>
